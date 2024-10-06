@@ -23,6 +23,14 @@ We foresee a future where content understanding and generation are seamlessly un
 <br>
 **2024.09.07** We released the paper about the first vision-language model, [POINTS](https://arxiv.org/abs/2409.04828), 🚀🚀🚀.
 
+## Installation
+
+```sh
+git clone https://github.com/WePOINTS/WePOINTS.git
+cd WePOINTS
+pip install -e .
+```
+
 ## How to Use?
 
 We provide the usage of POINTS, using huggingface 🤗 transformers library.
@@ -58,6 +66,21 @@ res = model.chat(
     generation_config
 )
 print(res)
+```
+
+## CATTY
+
+CATTY is a brand new strategy to split a large-resolution image into small patches of the same size. Compared to previsou approaches, CATTY can preserve the original image aspect ratio.
+
+```python
+from PIL import Image
+from wepoints.utils.images.catty import split_image_with_catty
+
+image_path = '/path/to/local/image.jpg'
+# used to save the split images for debugging
+save_folder = '/path/to/save/folder'
+image = Image.open(image_path)
+sub_images = split_image_with_catty(image, save_folder=save_folder, do_resize=True)
 ```
 
 ## Evaluation

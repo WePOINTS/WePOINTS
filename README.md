@@ -13,21 +13,21 @@ We foresee a future where content understanding and generation are seamlessly un
 
 ## Model Zoo
 
-| Model         | Date       | Download       |  Note           |
-| :--------------:| :----------: | :--------------: | :---------------: |
-| POINTS-Yi-1.5-9B-Chat　|2024.10.03 | 🤗 [HF link]()<br>🤖 [MS link]() | Strong performance with affordable stategies  |
+|         Model         |    Date    |               Download               |                     Note                     |
+| :-------------------: | :--------: | :----------------------------------: | :------------------------------------------: |
+| POINTS-Yi-1.5-9B-Chat | 2024.10.03 | 🤗 [HF link](<>)<br>🤖 [MS link](<>) | Strong performance with affordable stategies |
 
 ## What's New?
 
-**2024.10.05** We open-sourced the inference code of [POINTS](), 🔥🔥🔥.
+**2024.10.05** We open-sourced the inference code of [POINTS](<>), 🔥🔥🔥.
 <br>
 **2024.09.07** We released the paper about the first vision-language model, [POINTS](https://arxiv.org/abs/2409.04828), 🚀🚀🚀.
-
 
 ## How to Use?
 
 We provide the usage of POINTS, using huggingface 🤗 transformers library.
 <br>
+
 ```python
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers import CLIPImageProcessor
@@ -62,20 +62,20 @@ print(res)
 
 ## Evaluation
 
-| Benchmark | InternVL2-8B | LLaVA-OneVision | POINTS |
-| :-------: | :----------: | :-------------: | :----: |
-| MMBench-dev-en | - | 80.8 | 83.2 |
-| MathVista | 58.3 | 62.3 | 60.7 |
-| HallucinationBench | 45.0 | 31.6 | 48.0 |
-| OCRBench | 79.4 | 62.2 | 70.6 | 
-| AI2D | 83.6 | 82.4 | 78.5 |
-| MMVet | 54.3 | 51.9 | 50.0 |
-| MMStar | 61.5 | 61.9 | 56.4 |
-| MMMU | 51.2 | 47.9 | 46.9 |
-| ScienceQA | 97.1 | 95.4 | 92.9 |
-| MME | 2215.1 | 1993.6 | 2017.8 |
-| RealWorldQA | 64.2 | 69.9 | 65.9 |
-| LLaVA-Wild | 73.3 | 81.0 | 69.3 |
+|     Benchmark      | InternVL2-8B | LLaVA-OneVision | POINTS |
+| :----------------: | :----------: | :-------------: | :----: |
+|   MMBench-dev-en   |      -       |      80.8       |  83.2  |
+|     MathVista      |     58.3     |      62.3       |  60.7  |
+| HallucinationBench |     45.0     |      31.6       |  48.0  |
+|      OCRBench      |     79.4     |      62.2       |  70.6  |
+|        AI2D        |     83.6     |      82.4       |  78.5  |
+|       MMVet        |     54.3     |      51.9       |  50.0  |
+|       MMStar       |     61.5     |      61.9       |  56.4  |
+|        MMMU        |     51.2     |      47.9       |  46.9  |
+|     ScienceQA      |     97.1     |      95.4       |  92.9  |
+|        MME         |    2215.1    |     1993.6      | 2017.8 |
+|    RealWorldQA     |     64.2     |      69.9       |  65.9  |
+|     LLaVA-Wild     |     73.3     |      81.0       |  69.3  |
 
 ## Citation
 

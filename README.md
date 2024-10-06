@@ -1,7 +1,7 @@
 # WePOINTS
 
 <p align="center">
-    <img src="./assets/logo.png" width="700"/>
+    <img src="https://github.com/user-attachments/assets/4d5424e0-af7e-4a5e-8c77-6743e21f79db" width="700"/>
 <p>
 <p align="center">
         🤗 <a href="">Hugging Face</a>&nbsp&nbsp | &nbsp&nbsp🤖 <a href="">ModelScope</a>&nbsp&nbsp | &nbsp&nbsp 📑 <a href="">Blog</a> &nbsp&nbsp| &nbsp&nbsp 📑 <a href="https://arxiv.org/abs/2409.04828">Paper</a> &nbsp&nbsp  </a>

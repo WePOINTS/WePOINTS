@@ -1,0 +1,71 @@
+[project]
+name = "WePOINTS"
+version = "0.0.1"
+description = "Functionalities for WePOINTS - PyTorch"
+authors = [
+    { name = "WePOINTS Team", email = "bensenliu@tencent.com" },
+]
+dependencies = [
+    "requests",
+    "pillow",
+    "packaging"
+]
+readme = "README.md"
+requires-python = ">= 3.8"
+license = {text = "Apache-2.0"}
+keywords = [
+    'large language model',
+    'vision language model',
+    'wepoints',
+    'pytorch',
+]
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',
+    'Programming Language :: Python :: 3',
+    'License :: OSI Approved :: Apache Software License',
+]
+
+[project.urls]
+Homepage = "https://github.com/WePOINTS/WePOINTS"
+Repository = "https://github.com/WePOINTS/WePOINTS.git"
+Issues = "https://github.com/WePOINTS/WePOINTS/issues"
+
+[project.optional-dependencies]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "torch",
+    "torchvision",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["wepoints"]
+
+[tool.ruff]
+line-length = 119
+
+[tool.ruff.lint]
+ignore = ["C408", "C901", "E501", "E731", "E741", "W605"]
+select = ["C", "E", "F", "I", "W"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401", "F403", "F811"]
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
+known-first-party = ["wepoints"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

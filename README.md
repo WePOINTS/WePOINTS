@@ -74,6 +74,15 @@ res = model.chat(
 print(res)
 ```
 
+## How to Evaluate?
+
+We use [VLMEvalKit](https://github.com/open-compass/VLMEvalKit) to evaluate the performance of our models. Please follow the [installation instructions](https://github.com/open-compass/VLMEvalKit/blob/main/docs/en/get_started/Quickstart.md) to install the toolkit. Then, you can evaluate POINTS using the following command:
+
+```sh
+# before running the evaluation below, please enter the root directory of VLMEvalKit
+torchrun --nproc-per-node=8 --master_port=8888 --no-python python run.py --data MMMU_DEV_VAL MMBench_DEV_EN MMBench_TEST_EN_V11 MMBench_TEST_CN_V11 HallusionBench OCRBench AI2D_TEST MMStar MMVet MathVista_MINI MME RealWorldQA LLaVABench POPE  --model POINTS-Yi-1.5-9B-Chat --verbose --work-dir ./
+```
+
 ## CATTY
 
 CATTY is a brand new strategy to split a large-resolution image into small patches of the same size. Compared to previsou approaches, CATTY can preserve the original image aspect ratio.
@@ -89,21 +98,21 @@ image = Image.open(image_path)
 sub_images = split_image_with_catty(image, save_folder=save_folder, do_resize=True)
 ```
 
-## Evaluation
+## Evaluation Results
 
 |     Benchmark      | InternVL2-8B | LLaVA-OneVision | POINTS |
 | :----------------: | :----------: | :-------------: | :----: |
-|   MMBench-dev-en   |      -       |      80.8       |  83.2  |
-|     MathVista      |     58.3     |      62.3       |  60.7  |
-| HallucinationBench |     45.0     |      31.6       |  48.0  |
-|      OCRBench      |     79.4     |      62.2       |  70.6  |
-|        AI2D        |     83.6     |      82.4       |  78.5  |
-|       MMVet        |     54.3     |      51.9       |  50.0  |
-|       MMStar       |     61.5     |      61.9       |  56.4  |
-|        MMMU        |     51.2     |      47.9       |  46.9  |
+|   MMBench-dev-en   |      -       |      80.8       |  82.4  |
+|     MathVista      |     58.3     |      62.3       |  63.0  |
+| HallucinationBench |     45.0     |      31.6       |  47.8  |
+|      OCRBench      |     79.4     |      62.2       |  71.9  |
+|        AI2D        |     83.6     |      82.4       |  78.7  |
+|       MMVet        |     54.3     |      51.9       |  49.2  |
+|       MMStar       |     61.5     |      61.9       |  57.5  |
+|        MMMU        |     51.2     |      47.9       |  46.6  |
 |     ScienceQA      |     97.1     |      95.4       |  92.9  |
-|        MME         |    2215.1    |     1993.6      | 2017.8 |
-|    RealWorldQA     |     64.2     |      69.9       |  65.9  |
+|        MME         |    2215.1    |     1993.6      | 2024.8 |
+|    RealWorldQA     |     64.2     |      69.9       |  66.3  |
 |     LLaVA-Wild     |     73.3     |      81.0       |  69.3  |
 
 ## Citation

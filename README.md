@@ -4,24 +4,26 @@
     <img src="https://github.com/user-attachments/assets/4d5424e0-af7e-4a5e-8c77-6743e21f79db" width="700"/>
 <p>
 <p align="center">
-        🤗 <a href="">Hugging Face</a>&nbsp&nbsp | &nbsp&nbsp🤖 <a href="">ModelScope</a>&nbsp&nbsp | &nbsp&nbsp 📑 <a href="">Blog</a> &nbsp&nbsp| &nbsp&nbsp 📑 <a href="https://arxiv.org/abs/2409.04828">Paper</a> &nbsp&nbsp  </a>
+        🤗 <a href="https://huggingface.co/WePOINTS/POINTS-Yi-1-5-9B-Chat">Hugging Face</a>&nbsp&nbsp | &nbsp&nbsp🤖 <a href="">ModelScope</a>&nbsp&nbsp | &nbsp&nbsp 📑 <a href="">Blog</a> &nbsp&nbsp| &nbsp&nbsp 📑 <a href="https://arxiv.org/abs/2409.04828">Paper</a> &nbsp&nbsp  </a>
 </p>
 
 ## Introduction
 
 We foresee a future where content understanding and generation are seamlessly unified within a single model. To this end, we have launched the WePOINTS project. WePOINTS is a suite of multimodal models designed to create a unified framework that accommodates various modalities. These models are being developed by researchers at WeChat AI, leveraging the latest advancements and cutting-edge techniques in multimodal models.
 
-## Model Zoo
-
-|         Model         |    Date    |               Download               |                     Note                     |
-| :-------------------: | :--------: | :----------------------------------: | :------------------------------------------: |
-| POINTS-Yi-1.5-9B-Chat | 2024.10.03 | 🤗 [HF link](<>)<br>🤖 [MS link](<>) | Strong performance with affordable stategies |
-
 ## What's New?
 
-**2024.10.05** We open-sourced the inference code of [POINTS](<>), 🔥🔥🔥.
+**2024.10.05** We open-sourced the inference code of [POINTS](https://huggingface.co/WePOINTS/POINTS-Yi-1-5-9B-Chat)🔥🔥🔥.
 <br>
-**2024.09.07** We released the paper about the first vision-language model, [POINTS](https://arxiv.org/abs/2409.04828), 🚀🚀🚀.
+**2024.09.07** We released the paper about the first vision-language model, [POINTS](https://arxiv.org/abs/2409.04828)🚀🚀🚀.
+<br>
+**2024.05.20** We released the [paper](https://arxiv.org/abs/2405.11850) to reveal some overlooked aspects in vision-language models🚀🚀🚀.
+
+## Model Zoo
+
+|         Model         |    Date    |                                        Download                                         |                     Note                     |
+| :-------------------: | :--------: | :-------------------------------------------------------------------------------------: | :------------------------------------------: |
+| POINTS-Yi-1.5-9B-Chat | 2024.10.03 | 🤗 [HF link](https://huggingface.co/WePOINTS/POINTS-Yi-1-5-9B-Chat)<br>🤖 [MS link](<>) | Strong performance with affordable stategies |
 
 ## Installation
 
@@ -41,12 +43,16 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers import CLIPImageProcessor
 from PIL import Image
 import torch
+import requests
+from io import BytesIO
 
 
-image_path = '/path/to/local/image.jpg'
+image_url = 'https://github.com/user-attachments/assets/83258e94-5d61-48ef-a87f-80dd9d895524'
+response = requests.get(image_url)
+image_data = BytesIO(response.content)
+pil_image = Image.open(image_data)
 prompt = 'please describe the image in detail'
-pil_image = Image.open(image_path)
-model_path = ''
+model_path = 'WePOINTS/POINTS-Yi-1-5-9B-Chat'
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 model = AutoModelForCausalLM.from_pretrained(
     model_path, trust_remote_code=True, device_map='cuda').to(torch.bfloat16)

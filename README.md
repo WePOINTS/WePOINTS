@@ -86,6 +86,23 @@ We use [VLMEvalKit](https://github.com/open-compass/VLMEvalKit) to evaluate the 
 torchrun --nproc-per-node=8 --master_port=8888 --no-python python run.py --data MMMU_DEV_VAL MMBench_DEV_EN MMBench_TEST_EN_V11 MMBench_TEST_CN_V11 HallusionBench OCRBench AI2D_TEST MMStar MMVet MathVista_MINI MME RealWorldQA LLaVABench POPE  --model POINTS-Yi-1.5-9B-Chat --verbose --work-dir ./
 ```
 
+## Model Soup
+
+POINTS is the pioneering work that proposes applying model soup to models fine-tuned with different instruction datasets. This approach combines the benefits of these models and enhances the performance of the final averaged model. The following code snippet demonstrates how to use model soup to combine the models:
+
+```python
+from wepoints.utils import model_soup
+
+# models fine-tuned with different instruction datasets
+model_paths_or_names = [
+  'first_model_path',
+  'second_model_path',
+  'third_model_path'
+]
+save_path = '/path/to/save/model'
+model_soup(model_paths_or_names, save_path)
+```
+
 ## CATTY
 
 CATTY is a brand new strategy to split a large-resolution image into small patches of the same size. Compared to previsou approaches, CATTY can preserve the original image aspect ratio.

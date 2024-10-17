@@ -1,5 +1,5 @@
-from .catty import split_image_with_catt
+from .catty import split_image_with_catty
 
 __all__ = [
-    'split_image_with_catt',
+    'split_image_with_catty',
 ]

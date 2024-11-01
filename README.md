@@ -13,6 +13,7 @@ We foresee a future where content understanding and generation are seamlessly un
 
 ## What's New?
 
+**2024.11.02** Add the [demo script](scripts/pretrain_filtering_with_ppl.py) to filter the pre-training data by perplexity.
 **2024.10.15** We released POINTS with Qwen2.5-7B 🔥🔥🔥.
 <br>
 **2024.10.05** We open-sourced the inference code of [POINTS](https://huggingface.co/WePOINTS/POINTS-Yi-1-5-9B-Chat)🔥🔥🔥.
@@ -116,6 +117,14 @@ image_path = '/path/to/local/image.jpg'
 save_folder = '/path/to/save/folder'
 image = Image.open(image_path)
 sub_images = split_image_with_catty(image, save_folder=save_folder, do_resize=True)
+```
+
+## Filter the Pre-training Data by Perplexity
+
+We provide a script to filter the pre-training data by perplexity using Qwen2VL. Please first the download the demo pre-training data [here](https://huggingface.co/datasets/WePOINTS/POINTS-PT-PPL-DEMO). And then run the following command:
+
+```sh
+python scripts/pretrain_filtering_with_ppl.py --model_name Qwen2VL --model_path /path/to/model --original_file_path data.jsonl --filtered_file_path filtered_data.jsonl
 ```
 
 ## Evaluation Results

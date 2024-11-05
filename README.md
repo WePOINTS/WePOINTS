@@ -14,6 +14,7 @@ We foresee a future where content understanding and generation are seamlessly un
 ## What's New?
 
 **2024.11.02** Add the [demo script](scripts/pretrain_filtering_with_ppl.py) to filter the pre-training data by perplexity.
+<br>
 **2024.10.15** We released POINTS with Qwen2.5-7B 🔥🔥🔥.
 <br>
 **2024.10.05** We open-sourced the inference code of [POINTS](https://huggingface.co/WePOINTS/POINTS-Yi-1-5-9B-Chat)🔥🔥🔥.

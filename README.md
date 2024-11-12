@@ -40,7 +40,7 @@ pip install -e .
 
 ## How to Use?
 
-We provide the usage of POINTS, using huggingface 🤗 transformers library.
+We provide the usage of POINTS, using Hugging Face 🤗 transformers library.
 <br>
 
 ```python

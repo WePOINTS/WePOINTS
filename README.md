@@ -11,8 +11,11 @@
 
 We foresee a future where content understanding and generation are seamlessly unified within a single model. To this end, we have launched the WePOINTS project. WePOINTS is a suite of multimodal models designed to create a unified framework that accommodates various modalities. These models are being developed by researchers at WeChat AI, leveraging the latest advancements and cutting-edge techniques in multimodal models.
 
+
 ## What's New?
 
+**2024.12.06** We are releasing POINTS1.5, a significantly enhanced model compared to POINTS, now with bilingual support. Notably, POINTS1.5-7B ranks first on the OpenCompass leaderboard among all models under 10B. The accompanying paper will be available soon.🔥🔥🔥.
+<br>
 **2024.11.02** Add the [demo script](scripts/pretrain_filtering_with_ppl.py) to filter the pre-training data by perplexity.
 <br>
 **2024.10.15** We released POINTS with Qwen2.5-7B 🔥🔥🔥.
@@ -23,10 +26,19 @@ We foresee a future where content understanding and generation are seamlessly un
 <br>
 **2024.05.20** We released the [paper](https://arxiv.org/abs/2405.11850) to reveal some overlooked aspects in vision-language models🚀🚀🚀.
 
+
+## Release Plan
+
+- The technical report for POINTS1.5 will be released soon.
+- We will also be releasing the pre-training dataset for POINTS1.5.
+- Additionally, POINTS1.5 will be integrated into [SGLang](https://github.com/sgl-project/sglang).
+
+
 ## Model Zoo
 
 |          Model          |    Date    |                                         Download                                          |                     Note                     |
 | :---------------------: | :--------: | :---------------------------------------------------------------------------------------: | :------------------------------------------: |
+| POINTS-1-5-Qwen-2-5-7B-Chat | 2024.12.06 | 🤗 [HF link](https://huggingface.co/WePOINTS/POINTS-1-5-Qwen-2-5-7B-Chat)<br>🤖 [MS link](<>) |                  Qwen2.5-7B                  |
 | POINTS-Qwen-2-5-7B-Chat | 2024.10.15 | 🤗 [HF link](https://huggingface.co/WePOINTS/POINTS-Qwen-2-5-7B-Chat)<br>🤖 [MS link](<>) |                  Qwen2.5-7B                  |
 |  POINTS-Yi-1.5-9B-Chat  | 2024.10.03 |  🤗 [HF link](https://huggingface.co/WePOINTS/POINTS-Yi-1-5-9B-Chat)<br>🤖 [MS link](<>)  | Strong performance with affordable stategies |
 
@@ -40,43 +52,57 @@ pip install -e .
 
 ## How to Use?
 
-We provide the usage of POINTS, using Hugging Face 🤗 transformers library.
+We provide the usage of POINTS1.5, using Hugging Face 🤗 transformers library.
 <br>
 
 ```python
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from transformers import CLIPImageProcessor
-from PIL import Image
+from wepoints.utils.images import Qwen2ImageProcessorForPOINTSV15
 import torch
+from PIL import Image
 import requests
 from io import BytesIO
+
+
+model_path = 'WePOINTS/POINTS-1-5-Qwen-2-5-7B-Chat'
+model = AutoModelForCausalLM.from_pretrained(model_path,
+                                                 trust_remote_code=True,
+                                                 torch_dtype=torch.float16,
+                                                 device_map='cuda') 
+tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+image_processor = Qwen2ImageProcessorForPOINTSV15.from_pretrained(model_path)
 
 
 image_url = 'https://github.com/user-attachments/assets/83258e94-5d61-48ef-a87f-80dd9d895524'
 response = requests.get(image_url)
 image_data = BytesIO(response.content)
 pil_image = Image.open(image_data)
+pil_image = pil_image.save('image.jpg')
 prompt = 'please describe the image in detail'
-model_path = 'WePOINTS/POINTS-Yi-1-5-9B-Chat'
-tokenizer = AutoTokenizer.from_pretrained(model_path)
-model = AutoModelForCausalLM.from_pretrained(
-    model_path, trust_remote_code=True, device_map='cuda').to(torch.bfloat16)
-image_processor = CLIPImageProcessor.from_pretrained(model_path)
+
+content = [
+        dict(type='image', image='image.jpg'),
+        dict(type='text', text=prompt)
+    ]
+messages = [
+        {
+            'role': 'user',
+            'content': content
+        }
+    ]
 generation_config = {
-    'max_new_tokens': 1024,
-    'temperature': 0.0,
-    'top_p': 0.0,
-    'num_beams': 1,
-}
-res = model.chat(
-    pil_image,
-    prompt,
+        'max_new_tokens': 1024,
+        'temperature': 0.0,
+        'top_p': 0.0,
+        'num_beams': 1,
+    }
+response = model.chat(
+    messages,
     tokenizer,
     image_processor,
-    True,
     generation_config
 )
-print(res)
+print(response)
 ```
 
 ## How to Evaluate?
@@ -130,26 +156,36 @@ python scripts/pretrain_filtering_with_ppl.py --model_name Qwen2VL --model_path 
 
 ## Evaluation Results
 
-|     Benchmark      | InternVL2-8B | LLaVA-OneVision | POINTS-Yi-1.5-9B-Chat | POINTS-Qwen-2.5-7B-Chat |
-| :----------------: | :----------: | :-------------: | :-------------------: | :---------------------: |
-|   MMBench-dev-en   |      -       |      80.8       |         82.4          |          83.2           |
-|     MathVista      |     58.3     |      62.3       |         63.0          |          63.1           |
-| HallucinationBench |     45.0     |      31.6       |         47.8          |          46.0           |
-|      OCRBench      |     79.4     |      62.2       |         71.9          |          72.0           |
-|        AI2D        |     83.6     |      82.4       |         78.8          |          80.9           |
-|       MMVet        |     54.3     |      51.9       |         49.2          |          52.3           |
-|       MMStar       |     61.5     |      61.9       |         56.9          |          61.0           |
-|        MMMU        |     51.2     |      47.9       |         47.6          |          49.4           |
-|     ScienceQA      |     97.1     |      95.4       |         92.9          |            -            |
-|        MME         |    2215.1    |     1993.6      |        2024.8         |         2195.2          |
-|    RealWorldQA     |     64.2     |      69.9       |         66.3          |          67.3           |
-|     LLaVA-Wild     |     73.3     |      81.0       |         69.3          |          71.1           |
+| Benchmark | Qwen2-VL-7B | POINTS-7B | POINTS1.5-7B |
+| :-------: | :----------: | :-------------: | :----: |
+| MMBench-TEST-avg      | 81.0 | 78.0 | 80.7 |
+| MMStar                | 60.7 | 60.9 | 61.1 |
+| MMMU                  | 53.7 | 51.4 | 53.8 |
+| MathVista             | 61.4 | 63.0 | 66.4 |
+| HallucinationBench    | 50.4 | 45.6 | 50.0 |
+| AI2D                  | 83.0 | 81.2 | 81.4 |
+| OCRBench              | 84.3 | 71.7 | 82.3 | 
+| MMVet                 | 61.8 | 47.9 | 62.2 |
+| Average               | 67.0 | 62.5 | 67.4 |
+
+
+## Acknowledgements
+
+POINTS1.5 adapts the NaViT from Qwen2-VL, and we extend our gratitude to the Qwen Team for their outstanding work. We are also grateful to [Haodong Duan](https://scholar.google.com.hk/citations?user=vi3W-m8AAAAJ&hl=zh-CN) for his assistance in evaluating POINTS1.5.
+
 
 ## Citation
 
 If you find our work helpful, feel free to cite us:
 
 ```
+@article{liu2024points,
+  title={POINTS1.5: Building a Vision-Language Model towards Real World Applications},
+  author={Liu, Yuan and Le Tian and Xiao Zhou and Xinyu Gao and Kavio Yu and Yang Yu and Jie Zhou},
+  journal={Coming soon},
+  year={2024}
+}
+
 @article{liu2024points,
   title={POINTS: Improving Your Vision-language Model with Affordable Strategies},
   author={Liu, Yuan and Zhao, Zhongyin and Zhuang, Ziyuan and Tian, Le and Zhou, Xiao and Zhou, Jie},

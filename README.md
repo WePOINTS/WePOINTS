@@ -29,6 +29,8 @@ We foresee a future where content understanding and generation are seamlessly un
 
 ## Release Plan
 
+**As we are currently going through the internal open-source process at WeChat, we have temporarily made the model weights private. They will be made public again soon. Stay tuned.**
+
 - The technical report for POINTS1.5 will be released soon.
 - We will also be releasing the pre-training dataset for POINTS1.5.
 - Additionally, POINTS1.5 will be integrated into [SGLang](https://github.com/sgl-project/sglang).
@@ -179,7 +181,7 @@ POINTS1.5 adapts the NaViT from Qwen2-VL, and we extend our gratitude to the Qwe
 If you find our work helpful, feel free to cite us:
 
 ```
-@article{liu2024points,
+@article{points1.5,
   title={POINTS1.5: Building a Vision-Language Model towards Real World Applications},
   author={Liu, Yuan and Le Tian and Xiao Zhou and Xinyu Gao and Kavio Yu and Yang Yu and Jie Zhou},
   journal={Coming soon},

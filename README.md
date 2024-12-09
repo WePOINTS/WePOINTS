@@ -29,7 +29,7 @@ We foresee a future where content understanding and generation are seamlessly un
 
 ## Release Plan
 
-**As we are currently going through the internal open-source process at WeChat, we have temporarily made the model weights private. They will be made public again soon. Stay tuned.**
+**POINTS-Yi-1-5-9B-Chat re-opens now 🎉🎉🎉**
 
 - The technical report for POINTS1.5 will be released soon.
 - We will also be releasing the pre-training dataset for POINTS1.5.

@@ -14,7 +14,7 @@ We foresee a future where content understanding and generation are seamlessly un
 
 ## What's New?
 
-**2024.12.11** Release the [technical report](POINTS1_5_preview.pdf) for POINTS1.5.
+**2024.12.11** Release the [technical report](POINTS1_5_preview.pdf) for POINTS1.5 🎉🎉🎉.
 <br>
 **2024.12.06** We are releasing POINTS1.5, a significantly enhanced model compared to POINTS, now with bilingual support. Notably, POINTS1.5-7B ranks first on the OpenCompass leaderboard among all models under 10B. The accompanying paper will be available soon.🔥🔥🔥.
 <br>
@@ -31,7 +31,7 @@ We foresee a future where content understanding and generation are seamlessly un
 
 ## Release Plan
 
-**POINTS-Yi-1-5-9B-Chat re-opens now 🎉🎉🎉**
+**POINTS-1-5-Qwen-2-5-7B-Chat re-opens now 🎉🎉🎉**
 
 - The technical report for POINTS1.5 will be released soon.
 - We will also be releasing the pre-training dataset for POINTS1.5.

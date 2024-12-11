@@ -14,6 +14,8 @@ We foresee a future where content understanding and generation are seamlessly un
 
 ## What's New?
 
+**2024.12.11** Release the [technical report](POINTS1_5_preview.pdf) for POINTS1.5.
+<br>
 **2024.12.06** We are releasing POINTS1.5, a significantly enhanced model compared to POINTS, now with bilingual support. Notably, POINTS1.5-7B ranks first on the OpenCompass leaderboard among all models under 10B. The accompanying paper will be available soon.🔥🔥🔥.
 <br>
 **2024.11.02** Add the [demo script](scripts/pretrain_filtering_with_ppl.py) to filter the pre-training data by perplexity.

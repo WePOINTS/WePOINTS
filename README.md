@@ -177,6 +177,11 @@ python scripts/pretrain_filtering_with_ppl.py --model_name Qwen2VL --model_path 
 POINTS1.5 adapts the NaViT from Qwen2-VL, and we extend our gratitude to the Qwen Team for their outstanding work. We are also grateful to [Haodong Duan](https://scholar.google.com.hk/citations?user=vi3W-m8AAAAJ&hl=zh-CN) for his assistance in evaluating POINTS1.5.
 
 
+## License Agreement
+
+All of our open-source models are licensed under the Apache-2.0 license.
+
+
 ## Citation
 
 If you find our work helpful, feel free to cite us:

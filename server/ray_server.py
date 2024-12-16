@@ -4,7 +4,7 @@ import torch
 from PIL import Image
 import base64
 from io import BytesIO
-from typing import Any, Callable, Literal
+from typing import Any, Callable, Literal, Optional
 import contextlib
 from pydantic import BaseModel
 import fastapi
@@ -34,47 +34,7 @@ class WePOINTSModel:
         self._image_processor = Qwen2ImageProcessorForPOINTSV15.from_pretrained(
             model_path)
 
-        def _construct_prompt(
-            _self, messages: list[dict], image_processor
-        ) -> tuple[str, list[Image.Image], list[list]]:  # noqa
-            """Construct the prompt for the chat model.
-            Args:
-                messages (List[dict]): The input messages.
-
-            Returns:
-                Tuple[str, List[Image.Image], List[list]]:
-                    The prompt, images, and image grid shape.
-            """
-            images = []
-            image_grid_thws = []
-            reconstructed_messages = []
-            for message in messages:
-                role = message['role']
-                content_from_role = ''
-                for item in message['content']:
-                    if item['type'] == 'text':
-                        content_from_role += item['text']
-                    elif item['type'] == 'image':
-                        image_bytes = base64.b64decode(item['image'])
-                        image = Image.open(BytesIO(image_bytes)).convert('RGB')
-                        image_data = image_processor(images=image)
-                        pixel_values = image_data['pixel_values']
-                        image_grid_thw = image_data['image_grid_thw']
-                        images.extend(pixel_values)
-                        image_grid_thws.append(image_grid_thw)
-                        seq_len = int(image_grid_thw[0][1] *
-                                      image_grid_thw[0][2] / 4)  # noqa
-                        content_from_role += '<|vision_start|>' + '<|image_pad|>' * seq_len + '<|vision_end|>' + '\n'  # noqa
-                reconstructed_messages.append({
-                    'role': role,
-                    'content': content_from_role
-                })
-            prompt = _self.apply_chat_template(reconstructed_messages)
-            return prompt, images, image_grid_thws
-
-        self._model.construct_prompt = _construct_prompt.__get__(self._model)
-
-    def run(self, messages: list[dict], generation_config: dict[str, Any]):
+    def chat(self, messages: list[dict], generation_config: dict[str, Any]):
         return self._model.chat(messages, self._tokenizer,
                                 self._image_processor, generation_config)
 
@@ -131,17 +91,23 @@ class Message(BaseModel):
 class Request(BaseModel):
     messages: list[Message]
     max_tokens: int = 1024
-    temperature: float = 0.0
-    top_p: float = 0.0
-    num_beams: int = 1
+    temperature: Optional[float] = None
+    top_p: Optional[float] = None
+    top_k: Optional[int] = None
+
+
+class ResponseMessage(BaseModel):
+    role: str
+    content: str
+
+
+class Choice(BaseModel):
+    index: int
+    message: ResponseMessage
 
 
 class Response(BaseModel):
-    text: str
-
-
-class NumRunningResponse(BaseModel):
-    num_running: int
+    choices: list[Choice]
 
 
 class InputConverter:
@@ -151,12 +117,15 @@ class InputConverter:
         self._base64_req_pattern = re.compile(
             r'^data:image\/(.+);base64,(.+)$')
 
-    async def image_base64(self, url: str) -> str:
+    def __del__(self):
+        self._http_session.close()
+
+    async def image_bytes(self, url: str) -> bytes:
         match = self._base64_req_pattern.match(url)
         if match:
-            return match.group(2)
+            return base64.b64decode(match.group(2))
         async with self._http_session.get(url) as response:
-            return base64.b64encode(await response.read()).decode('utf-8')
+            return await response.read()
 
     async def convert(self, request: Request) -> (list[dict], dict[str, Any]):
         messages = []
@@ -164,12 +133,8 @@ class InputConverter:
             context = []
             for c in m.content:
                 if isinstance(c, ImageContext):
-                    context.append({
-                        "type":
-                        "image",
-                        "image":
-                        await self.image_base64(c.image_url.url)
-                    })
+                    buf = await self.image_bytes(c.image_url.url)
+                    context.append({"type": "image", "image": BytesIO(buf)})
                 else:
                     context.append(c.model_dump())
             messages.append({"role": m.role, "content": context})
@@ -177,7 +142,7 @@ class InputConverter:
             "max_new_tokens": request.max_tokens,
             "temperature": request.temperature,
             "top_p": request.top_p,
-            "num_beams": request.num_beams
+            "top_k": request.top_k,
         }
 
 
@@ -198,20 +163,22 @@ class Models:
         self._models = LeaseConnectionActorPool(model_actors)
         self._input_converter = InputConverter()
 
-    async def run(self, request: Request) -> Response:
+    async def chat(self, request: Request) -> Response:
         messages, generate_config = await self._input_converter.convert(request
                                                                         )
-        return Response(text=await self._models(
-            lambda a: a.run.remote(messages, generate_config)))
+        return Response(choices=[
+            Choice(index=0,
+                   message=ResponseMessage(
+                       role="assistant",
+                       content=await self._models(lambda a: a.chat.remote(
+                           messages, generate_config))))
+        ])
 
 
 fast_api_app = fastapi.FastAPI()
 
 
-@ray.serve.deployment(
-    ray_actor_options={"num_cpus": 1},
-    max_ongoing_requests=65536,
-)
+@ray.serve.deployment(ray_actor_options={"num_cpus": 1}, )
 @ray.serve.ingress(app=fast_api_app)
 class Application:
 
@@ -227,14 +194,10 @@ class Application:
         finally:
             self._num_running -= 1
 
-    @fast_api_app.get("/num_running", response_model=NumRunningResponse)
-    async def num_running(self) -> NumRunningResponse:
-        return NumRunningResponse(num_running=self._num_running)
-
-    @fast_api_app.post("/run", response_model=Response)
-    async def run(self, request: Request) -> Response:
+    @fast_api_app.post("/chat", response_model=Response)
+    async def chat(self, request: Request) -> Response:
         with self._running_guard():
-            return await self._models.run(request)
+            return await self._models.chat(request)
 
 
 def build_app(cli_args: dict[str, str]) -> ray.serve.Application:

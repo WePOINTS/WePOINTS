@@ -24,6 +24,7 @@ class WePOINTSModel:
         from wepoints.utils.images import Qwen2ImageProcessorForPOINTSV15
 
         model_path = "WePOINTS/POINTS-1-5-Qwen-2-5-7B-Chat"
+        print(f"start loading {model_path}...", file=sys.stderr)
         self._model = AutoModelForCausalLM.from_pretrained(
             model_path,
             trust_remote_code=True,
@@ -33,13 +34,11 @@ class WePOINTSModel:
                                                         trust_remote_code=True)
         self._image_processor = Qwen2ImageProcessorForPOINTSV15.from_pretrained(
             model_path)
+        print(f"complete loading {model_path}", file=sys.stderr)
 
     def chat(self, messages: list[dict], generation_config: dict[str, Any]):
         return self._model.chat(messages, self._tokenizer,
                                 self._image_processor, generation_config)
-
-    def ping(self):
-        pass
 
 
 class LeaseConnectionActorPool:
@@ -63,10 +62,6 @@ class LeaseConnectionActorPool:
                                           ray.ObjectRef]):
         with self._load_balance() as actor:
             return await fn(actor)
-
-
-def _wait_all(refs):
-    ray.wait(refs, num_returns=len(refs))
 
 
 class TextContext(BaseModel):
@@ -110,31 +105,44 @@ class Response(BaseModel):
     choices: list[Choice]
 
 
-class InputConverter:
+fast_api_app = fastapi.FastAPI()
+
+
+@ray.serve.deployment(ray_actor_options={"num_cpus": 1})
+@ray.serve.ingress(app=fast_api_app)
+class Application:
 
     def __init__(self):
+        num_gpus = int(math.floor(ray.available_resources()["GPU"]))
+        print(f"start {num_gpus} models", file=sys.stderr)
+        model_actors = [
+            WePOINTSModel.options(num_gpus=1).remote() for _ in range(num_gpus)
+        ]
+        self._models = LeaseConnectionActorPool(model_actors)
         self._http_session = aiohttp.ClientSession()
         self._base64_req_pattern = re.compile(
             r'^data:image\/(.+);base64,(.+)$')
 
-    def __del__(self):
-        self._http_session.close()
-
-    async def image_bytes(self, url: str) -> bytes:
+    async def _image_bytes(self, url: str) -> bytes:
         match = self._base64_req_pattern.match(url)
         if match:
             return base64.b64decode(match.group(2))
         async with self._http_session.get(url) as response:
             return await response.read()
 
-    async def convert(self, request: Request) -> (list[dict], dict[str, Any]):
+    async def _convert_input(self,
+                             request: Request) -> (list[dict], dict[str, Any]):
         messages = []
         for m in request.messages:
             context = []
             for c in m.content:
                 if isinstance(c, ImageContext):
-                    buf = await self.image_bytes(c.image_url.url)
-                    context.append({"type": "image", "image": BytesIO(buf)})
+                    context.append({
+                        "type":
+                        "image",
+                        "image":
+                        BytesIO(await self._image_bytes(c.image_url.url))
+                    })
                 else:
                     context.append(c.model_dump())
             messages.append({"role": m.role, "content": context})
@@ -145,27 +153,9 @@ class InputConverter:
             "top_k": request.top_k,
         }
 
-
-class Models:
-
-    def __init__(self):
-        num_gpus = int(math.floor(ray.available_resources()["GPU"]))
-        num_model_per_gpu = 1
-        model_actors = []
-        num_models = num_model_per_gpu * num_gpus
-        for _ in range(num_models):
-            model_actors.append(
-                WePOINTSModel.options(num_gpus=1 / num_model_per_gpu).remote())
-        print(f"staring {num_models} models...", file=sys.stderr)
-        _wait_all([actor.ping.remote() for actor in model_actors])
-        print(f"{num_models} models started.", file=sys.stderr)
-
-        self._models = LeaseConnectionActorPool(model_actors)
-        self._input_converter = InputConverter()
-
+    @fast_api_app.post("/chat", response_model=Response)
     async def chat(self, request: Request) -> Response:
-        messages, generate_config = await self._input_converter.convert(request
-                                                                        )
+        messages, generate_config = await self._convert_input(request)
         return Response(choices=[
             Choice(index=0,
                    message=ResponseMessage(
@@ -173,31 +163,6 @@ class Models:
                        content=await self._models(lambda a: a.chat.remote(
                            messages, generate_config))))
         ])
-
-
-fast_api_app = fastapi.FastAPI()
-
-
-@ray.serve.deployment(ray_actor_options={"num_cpus": 1}, )
-@ray.serve.ingress(app=fast_api_app)
-class Application:
-
-    def __init__(self):
-        self._models = Models()
-        self._num_running = 0
-
-    @contextlib.contextmanager
-    def _running_guard(self):
-        self._num_running += 1
-        try:
-            yield
-        finally:
-            self._num_running -= 1
-
-    @fast_api_app.post("/chat", response_model=Response)
-    async def chat(self, request: Request) -> Response:
-        with self._running_guard():
-            return await self._models.chat(request)
 
 
 def build_app(cli_args: dict[str, str]) -> ray.serve.Application:

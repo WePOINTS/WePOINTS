@@ -1,7 +1,6 @@
 import ray
 import logging
 import torch
-from PIL import Image
 import base64
 from io import BytesIO
 from typing import Any, Callable, Literal, Optional

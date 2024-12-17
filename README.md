@@ -13,7 +13,7 @@ We foresee a future where content understanding and generation are seamlessly un
 
 ## What's New?
 
-**2024.12.11** Release the [technical report](POINTS1_5_preview.pdf) for POINTS1.5 🎉🎉🎉.
+**2024.12.11** Release the [technical report](https://arxiv.org/abs/2412.08443) for POINTS1.5 🎉🎉🎉.
 <br>
 **2024.12.06** We are releasing POINTS1.5, a significantly enhanced model compared to POINTS, now with bilingual support. Notably, POINTS1.5-7B ranks first on the OpenCompass leaderboard among all models under 10B. The accompanying paper will be available soon.🔥🔥🔥.
 <br>
@@ -31,7 +31,6 @@ We foresee a future where content understanding and generation are seamlessly un
 
 **POINTS-1-5-Qwen-2-5-7B-Chat re-opens now 🎉🎉🎉**
 
-- The technical report for POINTS1.5 will be released soon.
 - We will also be releasing the pre-training dataset for POINTS1.5.
 - Additionally, POINTS1.5 will be integrated into [SGLang](https://github.com/sgl-project/sglang).
 
@@ -179,15 +178,19 @@ python scripts/pretrain_filtering_with_ppl.py --model_name Qwen2VL --model_path 
 
 POINTS1.5 adapts the NaViT from Qwen2-VL, and we extend our gratitude to the Qwen Team for their outstanding work. We are also grateful to [Haodong Duan](https://scholar.google.com.hk/citations?user=vi3W-m8AAAAJ&hl=zh-CN) for his assistance in evaluating POINTS1.5.
 
+## License Agreement
+
+All of our open-source models are licensed under the Apache-2.0 license.
+
 ## Citation
 
 If you find our work helpful, feel free to cite us:
 
 ```
-@article{points1.5,
-  title={POINTS1.5: Building a Vision-Language Model towards Real World Applications},
-  author={Liu, Yuan and Le Tian and Xiao Zhou and Xinyu Gao and Kavio Yu and Yang Yu and Jie Zhou},
-  journal={Coming soon},
+@article{liu2024points1,
+  title={POINTS1. 5: Building a Vision-Language Model towards Real World Applications},
+  author={Liu, Yuan and Tian, Le and Zhou, Xiao and Gao, Xinyu and Yu, Kavio and Yu, Yang and Zhou, Jie},
+  journal={arXiv preprint arXiv:2412.08443},
   year={2024}
 }
 

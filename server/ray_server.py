@@ -24,7 +24,7 @@ class WePOINTSModel:
         from wepoints.utils.images import Qwen2ImageProcessorForPOINTSV15
 
         model_path = 'WePOINTS/POINTS-1-5-Qwen-2-5-7B-Chat'
-        print(f"start loading {model_path}...", file=sys.stderr)
+        print(f'start loading {model_path}...', file=sys.stderr)
         self._model = AutoModelForCausalLM.from_pretrained(
             model_path,
             trust_remote_code=True,
@@ -32,9 +32,9 @@ class WePOINTSModel:
             device_map='cuda')
         self._tokenizer = AutoTokenizer.from_pretrained(model_path,
                                                         trust_remote_code=True)
-        self._image_processor = Qwen2ImageProcessorForPOINTSV15.from_pretrained(
+        self._image_processor = Qwen2ImageProcessorForPOINTSV15.from_pretrained(  # noqa
             model_path)
-        print(f"complete loading {model_path}", file=sys.stderr)
+        print(f'complete loading {model_path}', file=sys.stderr)
 
     def chat(self, messages: list[dict], generation_config: dict[str, Any]):
         return self._model.chat(messages, self._tokenizer,
@@ -111,7 +111,7 @@ fast_api_app = fastapi.FastAPI()
 class Application:
     def __init__(self):
         num_gpus = int(math.floor(ray.available_resources()['GPU']))
-        print(f"start {num_gpus} models", file=sys.stderr)
+        print(f'start {num_gpus} models', file=sys.stderr)
         model_actors = [
             WePOINTSModel.options(num_gpus=1).remote() for _ in range(num_gpus)
         ]

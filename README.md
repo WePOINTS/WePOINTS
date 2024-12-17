@@ -109,6 +109,12 @@ response = model.chat(
 print(response)
 ```
 
+### Deploy POINTS1.5 as an HTTP server
+
+We provide a demo to deploy our model as an HTTP service. On a machine with multiple GPUs, it will deploy one model instance on each GPU and automatically perform load balancing between these instances.
+
+See [README](./server/README.md) for details.
+
 ## How to Evaluate?
 
 We use [VLMEvalKit](https://github.com/open-compass/VLMEvalKit) to evaluate the performance of our models. Please follow the [installation instructions](https://github.com/open-compass/VLMEvalKit/blob/main/docs/en/get_started/Quickstart.md) to install the toolkit. Then, you can evaluate POINTS using the following command:

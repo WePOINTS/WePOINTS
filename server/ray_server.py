@@ -1,28 +1,29 @@
-import ray
-import logging
-import torch
 import base64
-from io import BytesIO
-from typing import Any, Callable, Literal, Optional
 import contextlib
-from pydantic import BaseModel
-import fastapi
+import logging
 import math
 import re
-import aiohttp
 import sys
+from io import BytesIO
+from typing import Any, Callable, Literal, Optional
+
+import aiohttp
+import fastapi
+import ray
+import torch
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
 
 @ray.remote
 class WePOINTSModel:
-
     def __init__(self):
         from transformers import AutoModelForCausalLM, AutoTokenizer
+
         from wepoints.utils.images import Qwen2ImageProcessorForPOINTSV15
 
-        model_path = "WePOINTS/POINTS-1-5-Qwen-2-5-7B-Chat"
+        model_path = 'WePOINTS/POINTS-1-5-Qwen-2-5-7B-Chat'
         print(f"start loading {model_path}...", file=sys.stderr)
         self._model = AutoModelForCausalLM.from_pretrained(
             model_path,
@@ -41,7 +42,6 @@ class WePOINTSModel:
 
 
 class LeaseConnectionActorPool:
-
     def __init__(self, actors: list[ray.actor.ActorHandle]):
         self._actors = actors
         self._num_running_per_actor = [0] * len(actors)
@@ -64,16 +64,15 @@ class LeaseConnectionActorPool:
 
 
 class TextContext(BaseModel):
-    type: Literal["text"]
+    type: Literal['text']
     text: str
 
 
 class ImageContext(BaseModel):
-
     class ImageURL(BaseModel):
         url: str
 
-    type: Literal["image_url"]
+    type: Literal['image_url']
     image_url: ImageURL
 
 
@@ -107,12 +106,11 @@ class Response(BaseModel):
 fast_api_app = fastapi.FastAPI()
 
 
-@ray.serve.deployment(ray_actor_options={"num_cpus": 1})
+@ray.serve.deployment(ray_actor_options={'num_cpus': 1})
 @ray.serve.ingress(app=fast_api_app)
 class Application:
-
     def __init__(self):
-        num_gpus = int(math.floor(ray.available_resources()["GPU"]))
+        num_gpus = int(math.floor(ray.available_resources()['GPU']))
         print(f"start {num_gpus} models", file=sys.stderr)
         model_actors = [
             WePOINTSModel.options(num_gpus=1).remote() for _ in range(num_gpus)
@@ -137,28 +135,28 @@ class Application:
             for c in m.content:
                 if isinstance(c, ImageContext):
                     context.append({
-                        "type":
-                        "image",
-                        "image":
+                        'type':
+                        'image',
+                        'image':
                         BytesIO(await self._image_bytes(c.image_url.url))
                     })
                 else:
                     context.append(c.model_dump())
-            messages.append({"role": m.role, "content": context})
+            messages.append({'role': m.role, 'content': context})
         return messages, {
-            "max_new_tokens": request.max_tokens,
-            "temperature": request.temperature,
-            "top_p": request.top_p,
-            "top_k": request.top_k,
+            'max_new_tokens': request.max_tokens,
+            'temperature': request.temperature,
+            'top_p': request.top_p,
+            'top_k': request.top_k,
         }
 
-    @fast_api_app.post("/chat", response_model=Response)
+    @fast_api_app.post('/chat', response_model=Response)
     async def chat(self, request: Request) -> Response:
         messages, generate_config = await self._convert_input(request)
         return Response(choices=[
             Choice(index=0,
                    message=ResponseMessage(
-                       role="assistant",
+                       role='assistant',
                        content=await self._models(lambda a: a.chat.remote(
                            messages, generate_config))))
         ])

@@ -1,7 +1,8 @@
 ## install dependency
+
 1. install WePOINTS. see: [README](../README.md)
 2. install ray:
-    
+
 ```bash
 pip install "ray[serve]"
 ```
@@ -13,6 +14,7 @@ serve run ray_server:build_app
 ```
 
 ## invoke server
+
 ```bash
 curl -X 'POST'   'http://127.0.0.1:8000/chat'  \
   -H 'accept: application/json' \

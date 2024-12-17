@@ -11,7 +11,6 @@
 
 We foresee a future where content understanding and generation are seamlessly unified within a single model. To this end, we have launched the WePOINTS project. WePOINTS is a suite of multimodal models designed to create a unified framework that accommodates various modalities. These models are being developed by researchers at WeChat AI, leveraging the latest advancements and cutting-edge techniques in multimodal models.
 
-
 ## What's New?
 
 **2024.12.11** Release the [technical report](https://arxiv.org/abs/2412.08443) for POINTS1.5 🎉🎉🎉.
@@ -28,7 +27,6 @@ We foresee a future where content understanding and generation are seamlessly un
 <br>
 **2024.05.20** We released the [paper](https://arxiv.org/abs/2405.11850) to reveal some overlooked aspects in vision-language models🚀🚀🚀.
 
-
 ## Release Plan
 
 **POINTS-1-5-Qwen-2-5-7B-Chat re-opens now 🎉🎉🎉**
@@ -36,14 +34,13 @@ We foresee a future where content understanding and generation are seamlessly un
 - We will also be releasing the pre-training dataset for POINTS1.5.
 - Additionally, POINTS1.5 will be integrated into [SGLang](https://github.com/sgl-project/sglang).
 
-
 ## Model Zoo
 
-|          Model          |    Date    |                                         Download                                          |                     Note                     |
-| :---------------------: | :--------: | :---------------------------------------------------------------------------------------: | :------------------------------------------: |
+|            Model            |    Date    |                                           Download                                            |                     Note                     |
+| :-------------------------: | :--------: | :-------------------------------------------------------------------------------------------: | :------------------------------------------: |
 | POINTS-1-5-Qwen-2-5-7B-Chat | 2024.12.06 | 🤗 [HF link](https://huggingface.co/WePOINTS/POINTS-1-5-Qwen-2-5-7B-Chat)<br>🤖 [MS link](<>) |                  Qwen2.5-7B                  |
-| POINTS-Qwen-2-5-7B-Chat | 2024.10.15 | 🤗 [HF link](https://huggingface.co/WePOINTS/POINTS-Qwen-2-5-7B-Chat)<br>🤖 [MS link](<>) |                  Qwen2.5-7B                  |
-|  POINTS-Yi-1.5-9B-Chat  | 2024.10.03 |  🤗 [HF link](https://huggingface.co/WePOINTS/POINTS-Yi-1-5-9B-Chat)<br>🤖 [MS link](<>)  | Strong performance with affordable stategies |
+|   POINTS-Qwen-2-5-7B-Chat   | 2024.10.15 |   🤗 [HF link](https://huggingface.co/WePOINTS/POINTS-Qwen-2-5-7B-Chat)<br>🤖 [MS link](<>)   |                  Qwen2.5-7B                  |
+|    POINTS-Yi-1.5-9B-Chat    | 2024.10.03 |    🤗 [HF link](https://huggingface.co/WePOINTS/POINTS-Yi-1-5-9B-Chat)<br>🤖 [MS link](<>)    | Strong performance with affordable stategies |
 
 ## Installation
 
@@ -71,7 +68,7 @@ model_path = 'WePOINTS/POINTS-1-5-Qwen-2-5-7B-Chat'
 model = AutoModelForCausalLM.from_pretrained(model_path,
                                                  trust_remote_code=True,
                                                  torch_dtype=torch.float16,
-                                                 device_map='cuda') 
+                                                 device_map='cuda')
 tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
 image_processor = Qwen2ImageProcessorForPOINTSV15.from_pretrained(model_path)
 
@@ -107,6 +104,12 @@ response = model.chat(
 )
 print(response)
 ```
+
+### Deploy POINTS1.5 as an HTTP server
+
+We provide a demo to deploy our model as an HTTP service. On a machine with multiple GPUs, it will deploy one model instance on each GPU and automatically perform load balancing between these instances.
+
+See [README](./server/README.md) for details.
 
 ## How to Evaluate?
 
@@ -159,28 +162,25 @@ python scripts/pretrain_filtering_with_ppl.py --model_name Qwen2VL --model_path 
 
 ## Evaluation Results
 
-| Benchmark | Qwen2-VL-7B | POINTS-7B | POINTS1.5-7B |
-| :-------: | :----------: | :-------------: | :----: |
-| MMBench-TEST-avg      | 81.0 | 78.0 | 80.7 |
-| MMStar                | 60.7 | 60.9 | 61.1 |
-| MMMU                  | 53.7 | 51.4 | 53.8 |
-| MathVista             | 61.4 | 63.0 | 66.4 |
-| HallucinationBench    | 50.4 | 45.6 | 50.0 |
-| AI2D                  | 83.0 | 81.2 | 81.4 |
-| OCRBench              | 84.3 | 71.7 | 82.3 | 
-| MMVet                 | 61.8 | 47.9 | 62.2 |
-| Average               | 67.0 | 62.5 | 67.4 |
-
+|     Benchmark      | Qwen2-VL-7B | POINTS-7B | POINTS1.5-7B |
+| :----------------: | :---------: | :-------: | :----------: |
+|  MMBench-TEST-avg  |    81.0     |   78.0    |     80.7     |
+|       MMStar       |    60.7     |   60.9    |     61.1     |
+|        MMMU        |    53.7     |   51.4    |     53.8     |
+|     MathVista      |    61.4     |   63.0    |     66.4     |
+| HallucinationBench |    50.4     |   45.6    |     50.0     |
+|        AI2D        |    83.0     |   81.2    |     81.4     |
+|      OCRBench      |    84.3     |   71.7    |     82.3     |
+|       MMVet        |    61.8     |   47.9    |     62.2     |
+|      Average       |    67.0     |   62.5    |     67.4     |
 
 ## Acknowledgements
 
 POINTS1.5 adapts the NaViT from Qwen2-VL, and we extend our gratitude to the Qwen Team for their outstanding work. We are also grateful to [Haodong Duan](https://scholar.google.com.hk/citations?user=vi3W-m8AAAAJ&hl=zh-CN) for his assistance in evaluating POINTS1.5.
 
-
 ## License Agreement
 
 All of our open-source models are licensed under the Apache-2.0 license.
-
 
 ## Citation
 

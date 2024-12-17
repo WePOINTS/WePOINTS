@@ -13,6 +13,8 @@ We foresee a future where content understanding and generation are seamlessly un
 
 ## What's New?
 
+**2024.12.17** Add support to deploy POINTS1.5 as an [HTTP server](./server/README.md).
+<br>
 **2024.12.11** Release the [technical report](https://arxiv.org/abs/2412.08443) for POINTS1.5 🎉🎉🎉.
 <br>
 **2024.12.06** We are releasing POINTS1.5, a significantly enhanced model compared to POINTS, now with bilingual support. Notably, POINTS1.5-7B ranks first on the OpenCompass leaderboard among all models under 10B. The accompanying paper will be available soon.🔥🔥🔥.

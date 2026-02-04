@@ -18,6 +18,8 @@ class Qwen2VisionTransformerForNavitPOINTS(
                 grid_thw: torch.Tensor) -> torch.Tensor:
         hidden_states = self.patch_embed(hidden_states)
         rotary_pos_emb = self.rot_pos_emb(grid_thw)
+        emb = torch.cat((rotary_pos_emb, rotary_pos_emb), dim=-1)
+        position_embeddings = (emb.cos(), emb.sin())
 
         cu_seqlens = torch.repeat_interleave(grid_thw[:, 1] * grid_thw[:, 2],
                                              grid_thw[:, 0]).cumsum(
@@ -27,6 +29,7 @@ class Qwen2VisionTransformerForNavitPOINTS(
         for blk in self.blocks:
             hidden_states = blk(hidden_states,
                                 cu_seqlens=cu_seqlens,
-                                rotary_pos_emb=rotary_pos_emb)
+                                rotary_pos_emb=rotary_pos_emb,
+                                position_embeddings=position_embeddings)
 
         return hidden_states

@@ -29,7 +29,6 @@ class Qwen2VisionTransformerForNavitPOINTS(
         for blk in self.blocks:
             hidden_states = blk(hidden_states,
                                 cu_seqlens=cu_seqlens,
-                                rotary_pos_emb=rotary_pos_emb,
                                 position_embeddings=position_embeddings)
 
         return hidden_states

@@ -6,8 +6,7 @@ from transformers import Qwen2VLImageProcessor
 from transformers.image_transforms import (convert_to_rgb, resize,
                                            to_channel_dimension_format)
 from transformers.image_utils import (ChannelDimension, ImageInput,
-                                      PILImageResampling, VideoInput,
-                                      get_image_size,
+                                      PILImageResampling, get_image_size,
                                       infer_channel_dimension_format,
                                       is_scaled_image, make_list_of_images,
                                       to_numpy_array)
@@ -63,7 +62,7 @@ class Qwen2ImageProcessorForPOINTSV15(Qwen2VLImageProcessor):
 
     def _preprocess(
         self,
-        images: Union[ImageInput, VideoInput],
+        images: Union[ImageInput],
         do_resize: bool = None,
         resample: PILImageResampling = None,
         do_rescale: bool = None,
@@ -74,6 +73,7 @@ class Qwen2ImageProcessorForPOINTSV15(Qwen2VLImageProcessor):
         do_convert_rgb: bool = None,
         data_format: Optional[ChannelDimension] = ChannelDimension.FIRST,
         input_data_format: Optional[Union[str, ChannelDimension]] = None,
+        **kwargs,
     ):
         images = make_list_of_images(images)
 
